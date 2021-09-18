@@ -1,0 +1,6 @@
+venv/
+
+act.sh
+
+db.sqlite3
+.idea/

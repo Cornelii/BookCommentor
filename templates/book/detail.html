@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    DetailedBook
+{% endblock %}
+
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h4>{{ book.title }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p>{{ book.content }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form action="{% url 'book:add' book.id %}" method="POST">
+                    {% csrf_token %}
+                    <label for="content">sentence</label>
+                    <input type="text" name="content">
+                    <input type="submit">
+                </form>
+            </div>
+        </div>
+
+        {% for sentence in book.sentences.all %}
+            <div class="row">
+                <div class="col col-sm-1">
+                    {{ sentence.id }}
+                </div>
+                <div class="col col-sm-1">
+                    {{ sentence.line_id }}
+                </div>
+                <div class="col">
+                    <p>{{ sentence.content }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

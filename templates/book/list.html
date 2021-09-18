@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}
+    Book List
+{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h3>Book List</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <button><a href="{% url 'book:create' %}">Create</a></button>
+            </div>
+        </div>
+        {% for book in books %}
+            <div class="row">
+            <div class="col">
+                <p>{{ book.title }}</p>
+            </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>{{ book.content }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
