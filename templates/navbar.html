@@ -1,0 +1,33 @@
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="nvabar-header">
+            <button type='button' class="navbar-toggle collapsed"
+            data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="#" class="navbar-brand">Book Commentor</a>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="{% url 'book:index' %}">Book List for Test</a>
+                </li>
+                <li>
+                    <a href="{% url 'book:index' %}">Making Book for Test</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#">Default1</a>
+                </li>
+                <li>
+                    <a href="#">Default2</a>
+                </li>
+            </ul>
+        </div>
+        <!-- .nav-collapse -->
+    </div>
+</nav>

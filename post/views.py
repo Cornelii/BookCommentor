@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Comment, SubComment, Scope
 from book.models import Book, Sentence
+from django.views import View
 # Create your views here.
 
 ## test code
@@ -9,25 +10,26 @@ def index(request):
     pass
 
 
-def detail(request, book_id, sentence_id):
-    sentence = Sentence.objects.get(id=sentence_id)
-    book = Book.objects.get(id=book_id)
-    line_id = sentence.line_id
-    sid = get_line2scope_id(line_id, book.scope_depth)
+class CommentView(View):
 
-    comments = []
-    while sid > 0:
-        scope = Scope.objects.filter(node_id=sid, book_id=book_id)
-        if scope:
-            comments += list(scope[0].comments.all())
-        sid //= 2
-    print(comments)
+    def get(self, request, book_id, sentence_id, comment_id):
+        pass
 
-    return render(request, 'post/detail.html', {'sentence': sentence, 'book': book, 'comments': comments})
+    def post(self, request, book_id, sentence_id, comment_id):
+        pass
 
+    def put(self, request, book_id, sentence_id, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        comment.content = request.POST.get('content')
+        comment.save()
+        return redirect('post:detail', book_id, sentence_id)
 
-def get_line2scope_id(line_id, depth):
-    return (1 << depth) - 1 + line_id
+    def delete(self, request, book_id, sentence_id, comment_id):
+        comment = get_object_or_404(Comment, comment_id)
+        for scope in comment.scopes:
+            scope.comments.remove(comment)
+        comment.delete()
+        return redirect('post:detail', book_id, sentence_id)
 
 
 def update_scope(sid, book, comment):
@@ -42,7 +44,7 @@ def update_scope(sid, book, comment):
         scope.comments.add(comment)
 
 
-def create_comment(request, book_id, first_id, last_id):
+def create_comment(request, book_id, sentence_id, first_id, last_id):
     book = Book.objects.get(id=book_id)
     depth = book.scope_depth
 
@@ -52,13 +54,14 @@ def create_comment(request, book_id, first_id, last_id):
     comment.last_id = last_id
     comment.save()
 
-    first_sid = get_line2scope_id(first_id, depth)
-    last_sid = get_line2scope_id(last_id, depth)
+    first_sid = Sentence.get_line2sid(first_id, depth)
+    last_sid = Sentence.get_line2sid(last_id, depth)
 
     while first_sid != last_sid and first_sid < last_sid:
         if first_sid > 0:
             if first_sid % 2:
                 update_scope(first_sid, book, comment)
+                first_sid += 1
             else:
                 first_sid //= 2
 
@@ -67,31 +70,34 @@ def create_comment(request, book_id, first_id, last_id):
                 last_sid //= 2
             else:
                 update_scope(last_id, book, comment)
+                last_sid -= 1
 
     update_scope(first_sid, book, comment)
 
-    return redirect('post:detail', book.id, first_id)
+    return redirect('post:detail', book.id, sentence_id)
 
 
-def update_comment(request):
-    pass
+class SubCommentView(View):
 
-def delete_comment(request):
-    pass
+    def get(self, request, book_id, sentence_id, comment_id, subcomment_id):
+        pass
 
-def comments(request):
-    pass
+    def post(self, request, book_id, sentence_id, comment_id, subcomment_id):
+        subcomment = SubComment()
+        comment = get_object_or_404(Comment, id=comment_id)
+        subcomment.content = request.POST.get('content')
+        subcomment.comment = comment
+        subcomment.save()
 
-def create_sub_comment(request):
-    pass
+        return render(request, 'post:detail', book_id, sentence_id)
 
-def update_sub_comment(request):
-    pass
 
-def delete_sub_comment(request):
-    pass
+    def put(self, request, book_id, sentence_id, comment_id, subcomment_id):
+        pass
 
-def sub_comments(request):
-    pass
+    def delete(self, request, book_id, sentence_id, comment_id, subcomment_id):
+        pass
+
+
 
 ## test code ends

@@ -23,4 +23,22 @@ class Sentence(models.Model):
     line_id = models.IntegerField()
     book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='sentences')
 
+    @classmethod
+    def add_sentence(cls, request, book):
+        content = request.POST.get('content')
+        sentence = Sentence()
+        sentence.content = content
+        sentence.book = book
+        sentence.chapter = request.POST.get('chapter')
+        sentence.chapter_id = 1
+        sentence.line_id = book.line_count + 1
+        sentence.save()
+
+        book.line_count += 1
+        book.save()
+
+    @classmethod
+    def get_line2sid(cls, line_id, depth):
+        return (1 << depth) - 1 + line_id
+
 

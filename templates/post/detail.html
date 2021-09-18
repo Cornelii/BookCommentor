@@ -7,33 +7,61 @@
 
 {% block body %}
 
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-            <div class="col">
-
-            </div>
             <div class="col">
                 <h3>{{ sentence.content }}</h3>
             </div>
         </div>
-
-        <form action="{% url 'post:create_comment' book.id sentence.line_id sentence.line_id %}" method="POST">
+        <div class="row">
+        <div class="col">
+        <form action="{% url 'post:create_comment' book.id sentence.id sentence.line_id sentence.line_id %}" method="POST">
             {% csrf_token %}
-            <label for="content">Comment</label>
-            <input type="text" name="content">
-            <input type="submit">
-        </form>
-
-        {% for comment in comments %}
-            <div class="row">
-                <div class="col col-sm-1">
-
-                </div>
-                <div class="col">
-                    {{ comment.content }}
+            <div class="form-group">
+                <label for="content">Post 작성하기</label>
+                <textarea name="content" id="" cols="30" rows="10" class="form-control"></textarea>
+            </div>
+            <div class="row form-group">
+                <div class="col col-sm-10"></div>
+                <div class="col col-sm-2">
+                    <input type="submit" class="btn btn-success form-control" value="Post Comment">
                 </div>
             </div>
-        {% endfor %}
+        </form>
+        </div>
+        </div>
+
+
+        <div class="list-group">
+            {% for comment in comments %}
+                <a href="" class="list-group-item">
+                    <div class="row">
+                        <div class="col col-sm-8">
+                            <p>{{ comment.content }}</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <form action="{% url 'post:comment' book.id sentence.id comment.id %}" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="hidden" name="action" value="DELETE">
+                                    <input type="submit" class="form-control btn btn-danger" value="DELETE">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col col-sm-2">
+                            <form action="">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="submit" class="form-control btn btn-success" value="Modify">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+
+        </div>
+
     </div>
 
 
