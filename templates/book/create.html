@@ -6,7 +6,7 @@
 
 
 {% block body %}
-    <form action="{% url 'book:create' %}" method="POST">
+    <form action="{% url 'book:book' 1 %}" method="POST">
         {% csrf_token %}
         <input type="text" name="title">
         <input type="text" name="content">

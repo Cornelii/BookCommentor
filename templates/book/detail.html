@@ -7,7 +7,7 @@
 
 
 {% block body %}
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
             <div class="col">
                 <h4>{{ book.title }}</h4>
@@ -20,27 +20,40 @@
         </div>
         <div class="row">
             <div class="col">
-                <form action="{% url 'book:add' book.id %}" method="POST">
+                <form action="{% url 'book:add' book.id 1 %}" method="POST">
                     {% csrf_token %}
-                    <label for="content">sentence</label>
-                    <input type="text" name="content">
-                    <input type="submit">
+                    <div class="form-group mb-3">
+                        <label for="sentence" class="form-label">Sentence</label>
+                        <textarea name="content" id="sentence" cols="30" rows="10" class="form-control"></textarea>
+                    </div>
+                    <div class="form_group mb-3">
+                        <input type="submit" class="btn btn-success" value="Add">
+                    </div>
                 </form>
             </div>
         </div>
-
-        {% for sentence in book.sentences.all %}
-            <div class="row">
-                <div class="col col-sm-1">
-                    {{ sentence.id }}
-                </div>
-                <div class="col col-sm-1">
-                    {{ sentence.line_id }}
-                </div>
-                <div class="col">
-                    <p>{{ sentence.content }}</p>
-                </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ book.title }}</div>
+                <table class="table">
+                    <thread>
+                        <tr>
+                            <th>#</th>
+                            <td>line</td>
+                            <td>contents</td>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        <tr>
+                            {% for sentence in book.sentences.all %}
+                            <th>{{ sentence.id }}</th>
+                            <td>{{ sentence.line_id }}</td>
+                            <td>{{ sentence.content }}</td>
+                        </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        {% endfor %}
+        </div>
     </div>
 {% endblock %}
