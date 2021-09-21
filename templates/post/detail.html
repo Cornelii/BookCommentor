@@ -43,7 +43,7 @@
                             <form action="{% url 'post:comment' book.id sentence.id comment.id %}" method="POST">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <input type="hidden" name="action" value="DELETE">
+                                    <input type="hidden" name="_method" value="delete">
                                     <input type="submit" class="form-control btn btn-danger" value="DELETE">
                                 </div>
                             </form>

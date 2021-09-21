@@ -20,7 +20,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <form action="{% url 'book:add' book.id 1 %}" method="POST">
+                <form action="{% url 'book:sentence' book.id 1 %}" method="POST">
                     {% csrf_token %}
                     <div class="form-group mb-3">
                         <label for="sentence" class="form-label">Sentence</label>
@@ -44,11 +44,15 @@
                         </tr>
                     </thread>
                     <tbody>
+                    {% for sentence in book.sentences.all %}
                         <tr>
-                            {% for sentence in book.sentences.all %}
                             <th>{{ sentence.id }}</th>
                             <td>{{ sentence.line_id }}</td>
-                            <td>{{ sentence.content }}</td>
+                            <td>
+                                <a href="{% url 'post:detail' book.id sentence.id  %}">
+                                {{ sentence.content }}
+                                </a>
+                            </td>
                         </tr>
                             {% endfor %}
                     </tbody>

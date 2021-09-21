@@ -12,6 +12,16 @@ def index(request):
 
 class CommentView(View):
 
+    def dispatch(self, *args, **kwargs):
+        method = self.request.POST.get('_method', '').lower()
+        print(method)
+        if method == 'put':
+            return self.put(*args, **kwargs)
+        elif method == 'delete':
+            return self.delete(*args, **kwargs)
+        else:
+            return super(CommentView, self).dispatch(*args, **kwargs)
+
     def get(self, request, book_id, sentence_id, comment_id):
         pass
 
@@ -24,9 +34,12 @@ class CommentView(View):
         comment.save()
         return redirect('post:detail', book_id, sentence_id)
 
-    def delete(self, request, book_id, sentence_id, comment_id):
-        comment = get_object_or_404(Comment, comment_id)
-        for scope in comment.scopes:
+    def delete(self, *args, **kwargs):
+        comment_id = kwargs['comment_id']
+        book_id = kwargs['book_id']
+        sentence_id = kwargs['sentence_id']
+        comment = get_object_or_404(Comment, id=comment_id)
+        for scope in comment.scopes.all():
             scope.comments.remove(comment)
         comment.delete()
         return redirect('post:detail', book_id, sentence_id)

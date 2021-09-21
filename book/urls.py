@@ -9,5 +9,4 @@ urlpatterns = [
     path('<int:book_id>/', BookView.as_view(), name='book'),
     path('<int:book_id>/<int:sentence_id>/', SentenceView.as_view(), name='sentence'),
     path('create/', TemplateView.as_view(template_name='book/create.html'), name='create'),
-    path('<int:book_id>/<int:sentence_id>/', SentenceView.as_view(), name='add'),
 ]
