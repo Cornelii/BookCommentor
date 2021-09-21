@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Comment, SubComment, Scope
 from book.models import Book, Sentence
 from django.views import View
+from .forms import SubCommentForm
 # Create your views here.
 
 ## test code
@@ -22,15 +23,15 @@ class CommentView(View):
         else:
             return super(CommentView, self).dispatch(*args, **kwargs)
 
-    def get(self, request, book_id, sentence_id, comment_id):
+    def get(self, *args, **kwargs):
         pass
 
-    def post(self, request, book_id, sentence_id, comment_id):
+    def post(self, book_id, sentence_id, comment_id):
         pass
 
-    def put(self, request, book_id, sentence_id, comment_id):
+    def put(self, book_id, sentence_id, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
-        comment.content = request.POST.get('content')
+        comment.content = self.request.POST.get('content')
         comment.save()
         return redirect('post:detail', book_id, sentence_id)
 
@@ -92,23 +93,51 @@ def create_comment(request, book_id, sentence_id, first_id, last_id):
 
 class SubCommentView(View):
 
-    def get(self, request, book_id, sentence_id, comment_id, subcomment_id):
-        pass
+    def dispatch(self, *args, **kwargs):
+        method = self.request.POST.get('_method', '')
+        if method == 'put':
+            return self.put(*args, **kwargs)
+        elif method == 'delete':
+            return self.delete(*args, **kwargs)
+        else:
+            return super(SubCommentView, self).dispatch(*args, **kwargs)
 
-    def post(self, request, book_id, sentence_id, comment_id, subcomment_id):
-        subcomment = SubComment()
+    def get(self, *args, **kwargs):
+        sentence_id = kwargs.get('sentence_id', 0)
+        comment_id = kwargs.get('comment_id', 0)
+        subcomment_id = kwargs.get('subcomment_id', 0)
+
+        sentence = get_object_or_404(Sentence, id=sentence_id)
         comment = get_object_or_404(Comment, id=comment_id)
-        subcomment.content = request.POST.get('content')
-        subcomment.comment = comment
-        subcomment.save()
+        if subcomment_id:
+            subcomment = SubComment.objects.get(id=subcomment_id)
+            form = SubCommentForm(instance=subcomment)
+        else:
+            form = SubCommentForm()
+            subcomment = SubComment()
 
-        return render(request, 'post:detail', book_id, sentence_id)
+        return render(self.request, 'post/sub_detail.html', {'form': form, 'sentence':sentence,
+                                                             'comment': comment, 'subcomment': subcomment})
+
+    def post(self, *args, **kwargs):
+        comment_id = kwargs.get('comment_id', '')
+        book_id = kwargs.get('book_id', '')
+        sentence_id = kwargs.get('sentence_id', '')
+        comment = get_object_or_404(Comment, id=comment_id)
+        form = SubCommentForm(self.request.POST, self.request.FILES)
+        if form.is_valid():
+            subcomment = form.save(commit=False)
+            subcomment.comment = comment
+            subcomment.save()
+            return redirect('post:subcomment', book_id, sentence_id, comment_id, subcomment.id)
+
+        return render(self.request, 'post:detail', book_id, sentence_id)
 
 
-    def put(self, request, book_id, sentence_id, comment_id, subcomment_id):
+    def put(self, book_id, sentence_id, comment_id, subcomment_id):
         pass
 
-    def delete(self, request, book_id, sentence_id, comment_id, subcomment_id):
+    def delete(self, book_id, sentence_id, comment_id, subcomment_id):
         pass
 
 
