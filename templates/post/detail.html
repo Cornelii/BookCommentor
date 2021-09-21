@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 
-{% block title %}{% endblock %}
+{% block title %}Comment Detail{% endblock %}
 
 {% block css %}{% endblock %}
 
@@ -34,10 +34,10 @@
 
         <div class="list-group">
             {% for comment in comments %}
-                <a href="" class="list-group-item">
+                <a href="{% url 'post:subcomment' book.id sentence.id comment.id 0 0 %}" class="list-group-item">
                     <div class="row">
                         <div class="col col-sm-8">
-                            <p>{{ comment.content }}</p>
+                            <p>{{ comment.id }} {{ comment.content }}</p>
                         </div>
                         <div class="col-sm-2">
                             <form action="{% url 'post:comment' book.id sentence.id comment.id %}" method="POST">
